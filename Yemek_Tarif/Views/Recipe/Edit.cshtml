@@ -4,7 +4,7 @@
     ViewData["Title"] = "Edit Recipe";
 }
 
-<h2>Edit Recipe</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="Edit" method="post">
     <div class="form-group">
@@ -17,7 +17,7 @@
         <select class="form-control" id="CategoryId" name="CategoryId" required>
             @foreach (var category in ViewBag.Categories as IEnumerable<Yemek_Tarif.Models.Category>)
             {
-                <option value="@category.CategoryId" @(category.CategoryId == Model.CategoryId ? "selected" : "")>@category.CategoryName</option>
+                <option value="@category.CategoryId" data-category-id="@category.CategoryId">@category.CategoryName</option>
             }
         </select>
     </div>
@@ -35,3 +35,17 @@
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Cancel</a>
 </form>
+
+@section Scripts {
+    <script type="text/javascript">
+        // Sayfa yüklendikten sonra seçili kategoriyi ayarla
+        $(document).ready(function () {
+            var selectedCategoryId = @Model.CategoryId; // Razor ile seçili kategori ID'sini al
+            $('#CategoryId option').each(function () {
+                if ($(this).data('category-id') == selectedCategoryId) {
+                    $(this).prop('selected', true); // Eğer eşleşirse seçili yap
+                }
+            });
+        });
+    </script>
+}

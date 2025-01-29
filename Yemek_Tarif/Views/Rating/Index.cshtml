@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Yemek_Tarif.Models.Rating>
+
+@{
+    ViewData["Title"] = "Puanlar";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Puan</th>
+            <th>Kullanıcı</th>
+            <th>Verilme Tarihi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rating in Model)
+        {
+            <tr>
+                <td>@rating.RatingValue</td>
+                <td>@rating.User.Username</td> <!-- Kullanıcı adı veya bilgisi -->
+                <td>@rating.DateCreated.ToString("dd/MM/yyyy")</td> <!-- Tarih formatı -->
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Details", "Recipe", new { id = ViewBag.RecipeId })" class="btn btn-secondary">Geri</a>

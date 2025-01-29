@@ -1,0 +1,30 @@
+﻿@using System.Security.Claims
+@model Yemek_Tarif.Models.Rating
+
+@{
+    ViewData["Title"] = "Puan Ver";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="RatingValue" class="control-label"></label>
+        <select asp-for="RatingValue" class="form-control">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <span asp-validation-for="RatingValue" class="text-danger"></span>
+    </div>
+
+    <!-- Gizli alan: RecipeId ve UserId -->
+    <input type="hidden" asp-for="RecipeId" value="@ViewBag.RecipeId" />
+    <input type="hidden" asp-for="UserId" value="@User.FindFirst(ClaimTypes.NameIdentifier)?.Value" />
+
+    <button type="submit" class="btn btn-primary">Puanı Gönder</button>
+</form>
+
+<a href="@Url.Action("Details", "Recipe", new { id = ViewBag.RecipeId })" class="btn btn-secondary">Geri</a>

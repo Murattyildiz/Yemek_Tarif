@@ -11,5 +11,8 @@
 
         public int UserId { get; set; }
         public User User { get; set; }
+
+        // Rating için oluşturulma tarihi
+        public DateTime DateCreated { get; set; }
     }
 }
