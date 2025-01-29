@@ -1,0 +1,24 @@
+﻿@model Yemek_Tarif.Models.Recipe
+
+@{
+    ViewData["Title"] = "Recipe Details";
+}
+
+<h2>@Model.Title</h2>
+
+<div>
+    <strong>Category:</strong> @Model.Category.CategoryName
+</div>
+<div>
+    <strong>Ingredients:</strong> @Model.Ingredients
+</div>
+<div>
+    <strong>Instructions:</strong> @Model.Instructions
+</div>
+<div>
+    <strong>Created by:</strong> @Model.User.Username on @Model.DateCreated.ToString("MMMM dd, yyyy")
+</div>
+
+<a href="@Url.Action("Edit", "Recipe", new { id = Model.RecipeId })" class="btn btn-warning">Edit</a>
+<a href="@Url.Action("Delete", "Recipe", new { id = Model.RecipeId })" class="btn btn-danger">Delete</a>
+<a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Back to List</a>

@@ -1,0 +1,37 @@
+﻿@model Yemek_Tarif.Models.Recipe
+
+@{
+    ViewData["Title"] = "Create Recipe";
+}
+
+<h2>Create a New Recipe</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="CategoryId">Category</label>
+        <select class="form-control" id="CategoryId" name="CategoryId" required>
+            @foreach (var category in ViewBag.Categories as IEnumerable<Yemek_Tarif.Models.Category>)
+            {
+                <option value="@category.CategoryId">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Ingredients">Ingredients</label>
+        <textarea class="form-control" id="Ingredients" name="Ingredients" required>@Model.Ingredients</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="Instructions">Instructions</label>
+        <textarea class="form-control" id="Instructions" name="Instructions" required>@Model.Instructions</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Cancel</a>
+</form>

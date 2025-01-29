@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Yemek_Tarif.Models.Recipe>
+
+<h2>Recipes</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>User</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var recipe in Model)
+        {
+            <tr>
+                <td>@recipe.Title</td>
+                <td>@recipe.Category.CategoryName</td>
+                <td>@recipe.User.Username</td>
+                <td>
+                    <a href="@Url.Action("Details", "Recipe", new { id = recipe.RecipeId })">Details</a> |
+                    <a href="@Url.Action("Edit", "Recipe", new { id = recipe.RecipeId })">Edit</a> |
+                    <a href="@Url.Action("Delete", "Recipe", new { id = recipe.RecipeId })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
