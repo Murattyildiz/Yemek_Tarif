@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Yemek_Tarif</title>
+    <title>@ViewData["Title"] - Yemek Tarif</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Yemek_Tarif.styles.css" asp-append-version="true" />
@@ -12,22 +12,40 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="@Url.Action("Index", "Home")">Yemek_Tarif</a>
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Yemek Tarif</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="Home" asp-action="Index">Anasayfa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Recipe" asp-action="Index">Tarifler</a>
+                        </li>
+                    </ul>
+
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="@Url.Action("Index", "Comment")">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Rating")">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Recipe")">Recipes</a>
-                        </li>
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">Hoş Geldiniz, @Context.Session.GetString("Username")</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -42,7 +60,7 @@
 
     <footer class="footer mt-auto py-3 bg-dark text-white">
         <div class="container text-center">
-            <span>&copy; 2025 - Yemek_Tarif - <a class="text-white" href="@Url.Action("Privacy", "Home")">Privacy</a></span>
+            <span>&copy; 2025 - Yemek Tarif - <a class="text-white" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a></span>
         </div>
     </footer>
 

@@ -1,0 +1,39 @@
+﻿@model Yemek_Tarif.Models.User
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<h2>Kayıt Ol</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-controller="Account" asp-action="Register" method="post">
+    <div class="mb-3">
+        <label class="form-label">Kullanıcı Adı</label>
+        <input type="text" class="form-control" name="Username" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">E-posta</label>
+        <input type="email" class="form-control" name="Email" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Şifre</label>
+        <input type="password" class="form-control" name="Password" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+</form>
