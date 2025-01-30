@@ -19,6 +19,49 @@
     <strong>Created by:</strong> @Model.User.Username on @Model.DateCreated.ToString("MMMM dd, yyyy")
 </div>
 
-<a href="@Url.Action("Edit", "Recipe", new { id = Model.RecipeId })" class="btn btn-warning">Edit</a>
-<a href="@Url.Action("Delete", "Recipe", new { id = Model.RecipeId })" class="btn btn-danger">Delete</a>
-<a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Back to List</a>
+<!-- Edit and Delete buttons -->
+<div class="mt-3">
+    <a href="@Url.Action("Edit", "Recipe", new { id = Model.RecipeId })" class="btn btn-warning">Edit</a>
+    <a href="@Url.Action("Delete", "Recipe", new { id = Model.RecipeId })" class="btn btn-danger">Delete</a>
+    <a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Back to List</a>
+</div>
+
+<hr />
+
+<!-- Yorumlar Bölümü -->
+<h3>Comments</h3>
+@if (Model.Comments != null && Model.Comments.Any())
+{
+    <div class="comments">
+        @foreach (var comment in Model.Comments)
+        {
+            <div class="comment">
+                <p><strong>@comment.User.Username</strong> - @comment.DateCreated.ToString("MMMM dd, yyyy")</p>
+                <p>@comment.CommentText</p>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No comments yet.</p>
+}
+
+<hr />
+
+<!-- Yorum Ekleme Formu -->
+@if (Context.Session.GetInt32("UserId") != null)
+{
+    <h4>Add a Comment</h4>
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" name="recipeId" value="@Model.RecipeId" />
+        <div class="form-group">
+            <textarea name="commentText" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+    </form>
+}
+else
+{
+    <p><a href="@Url.Action("Login", "Account")">Login</a> to add a comment.</p>
+}

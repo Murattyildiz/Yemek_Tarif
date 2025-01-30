@@ -34,7 +34,10 @@ namespace Yemek_Tarif.Controllers
             var recipe = await _context.Recipes
                 .Include(r => r.User)
                 .Include(r => r.Category)
+                .Include(r => r.Comments) // Yorumları da dahil ediyoruz
+                .ThenInclude(c => c.User) // Yorum yapan kullanıcıyı ekliyoruz
                 .FirstOrDefaultAsync(m => m.RecipeId == id);
+
             if (recipe == null)
             {
                 return NotFound();
@@ -152,6 +155,34 @@ namespace Yemek_Tarif.Controllers
             _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // Yorum Ekleme (AddComment)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(int recipeId, string commentText)
+        {
+            if (string.IsNullOrEmpty(commentText))
+            {
+                // Eğer yorum boş ise, kullanıcıya bir hata mesajı dönebiliriz
+                TempData["ErrorMessage"] = "Yorum alanı boş olamaz!";
+                return RedirectToAction("Details", new { id = recipeId });
+            }
+
+            // Yorum eklemek için yeni bir Comment nesnesi oluşturuyoruz
+            var comment = new Comment
+            {
+                RecipeId = recipeId,
+                UserId = (int)HttpContext.Session.GetInt32("UserId"), // Kullanıcı ID'sini oturumdan alıyoruz
+                CommentText = commentText,
+                DateCreated = DateTime.Now
+            };
+
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+
+            // Yorum eklendikten sonra, kullanıcının tarifin detay sayfasına yönlendirilmesi sağlanır
+            return RedirectToAction("Details", "Recipe", new { id = recipeId });
         }
 
         private bool RecipeExists(int id)
