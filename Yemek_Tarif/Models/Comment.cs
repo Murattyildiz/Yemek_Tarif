@@ -12,5 +12,8 @@
 
         public int UserId { get; set; }
         public User User { get; set; }
+
+        // Yeni eklenen özellik: Kullanıcının puanı
+        public int RatingValue { get; set; } // 1 ile 5 arasında bir değer alacak
     }
 }

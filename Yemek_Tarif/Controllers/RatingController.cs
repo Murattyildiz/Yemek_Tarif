@@ -13,43 +13,45 @@ namespace Yemek_Tarif.Controllers
             _context = context;
         }
 
-        // GET: Rating/Create
-        public IActionResult Create(int recipeId)
-        {
-            ViewBag.RecipeId = recipeId;
-            return View();
-        }
-
-        // POST: Rating/Create
+        // Puan ekleme veya güncelleme işlemi (Yorum yaparken puan da eklenir)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RatingId, RatingValue, RecipeId, UserId")] Rating rating)
+        public async Task<IActionResult> AddRating(int recipeId, int ratingValue)
         {
-            if (ModelState.IsValid)
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
             {
-                // Aynı kullanıcı, aynı tarife zaten oy vermişse, eski puanını güncelleyelim
-                var existingRating = await _context.Ratings
-                    .FirstOrDefaultAsync(r => r.RecipeId == rating.RecipeId && r.UserId == rating.UserId);
-
-                if (existingRating != null)
-                {
-                    existingRating.RatingValue = rating.RatingValue;
-                    _context.Update(existingRating);
-                }
-                else
-                {
-                    rating.DateCreated = DateTime.Now;
-                    _context.Add(rating);
-                }
-
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "Recipe", new { id = rating.RecipeId });
+                return RedirectToAction("Login", "Account");
             }
-            ViewBag.RecipeId = rating.RecipeId;
-            return View(rating);
+
+            var existingRating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.RecipeId == recipeId && r.UserId == userId);
+
+            if (existingRating != null)
+            {
+                // Kullanıcı zaten puan verdiyse, güncelle
+                existingRating.RatingValue = ratingValue;
+                _context.Update(existingRating);
+            }
+            else
+            {
+                // Yeni puan ekle
+                var newRating = new Rating
+                {
+                    RecipeId = recipeId,
+                    UserId = userId.Value,
+                    RatingValue = ratingValue,
+                    DateCreated = DateTime.Now
+                };
+                _context.Add(newRating);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", "Recipe", new { id = recipeId });
         }
 
-        // GET: Rating/Index
+        // Belirli bir tarifin puanlarını listeleme
         public async Task<IActionResult> Index(int recipeId)
         {
             var ratings = await _context.Ratings
@@ -58,6 +60,20 @@ namespace Yemek_Tarif.Controllers
                 .ToListAsync();
 
             return View(ratings);
+        }
+
+        // Belirli bir tarifin ortalama puanını hesaplama
+        public async Task<double> GetAverageRating(int recipeId)
+        {
+            var ratings = await _context.Ratings
+                .Where(r => r.RecipeId == recipeId)
+                .ToListAsync();
+
+            if (ratings.Any())
+            {
+                return ratings.Average(r => r.RatingValue);
+            }
+            return 0;
         }
     }
 }

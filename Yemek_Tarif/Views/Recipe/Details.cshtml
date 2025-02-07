@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Recipe Details";
+    var userId = Context.Session.GetInt32("UserId"); // Giriş yapan kullanıcıyı al
 }
 
 <h2>@Model.Title</h2>
@@ -19,12 +20,28 @@
     <strong>Created by:</strong> @Model.User.Username on @Model.DateCreated.ToString("MMMM dd, yyyy")
 </div>
 
-<!-- Edit and Delete buttons -->
+<!-- Ortalama Puanı Gösterme -->
 <div class="mt-3">
-    <a href="@Url.Action("Edit", "Recipe", new { id = Model.RecipeId })" class="btn btn-warning">Edit</a>
-    <a href="@Url.Action("Delete", "Recipe", new { id = Model.RecipeId })" class="btn btn-danger">Delete</a>
-    <a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary">Back to List</a>
+    <strong>Average Rating:</strong>
+    <span class="star-rating">
+        @for (int i = 1; i <= 5; i++)
+        {
+            <span class="star @(i <= Math.Round(Model.AverageRating) ? "filled" : "")">★</span>
+        }
+    </span>
+    (@Model.AverageRating.ToString("0.0") / 5)
 </div>
+
+<!-- Edit ve Delete Butonları (Sadece Tarifi Ekleyen Kişiye Görünür) -->
+@if (userId != null && userId == Model.UserId)
+{
+    <div class="mt-3">
+        <a href="@Url.Action("Edit", "Recipe", new { id = Model.RecipeId })" class="btn btn-warning">Edit</a>
+        <a href="@Url.Action("Delete", "Recipe", new { id = Model.RecipeId })" class="btn btn-danger">Delete</a>
+    </div>
+}
+
+<a href="@Url.Action("Index", "Recipe")" class="btn btn-secondary mt-3">Back to List</a>
 
 <hr />
 
@@ -38,6 +55,14 @@
             <div class="comment">
                 <p><strong>@comment.User.Username</strong> - @comment.DateCreated.ToString("MMMM dd, yyyy")</p>
                 <p>@comment.CommentText</p>
+
+                <!-- Kullanıcının verdiği puanı yıldızlarla göster -->
+                <div class="comment-rating">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="star @(i <= comment.RatingValue ? "filled" : "")">★</span>
+                    }
+                </div>
             </div>
         }
     </div>
@@ -49,15 +74,30 @@ else
 
 <hr />
 
-<!-- Yorum Ekleme Formu -->
-@if (Context.Session.GetInt32("UserId") != null)
+<!-- Yorum Ekleme ve Puanlama Formu -->
+@if (userId != null)
 {
-    <h4>Add a Comment</h4>
+    <h4>Add a Comment & Rating</h4>
     <form asp-action="AddComment" method="post">
         <input type="hidden" name="recipeId" value="@Model.RecipeId" />
+
         <div class="form-group">
+            <label for="commentText">Your Comment:</label>
             <textarea name="commentText" class="form-control" rows="3" required></textarea>
         </div>
+
+        <!-- Puan Seçme -->
+        <div class="form-group">
+            <label>Rate this recipe:</label>
+            <div class="rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <input type="radio" id="star-@i" name="ratingValue" value="@i" required>
+                    <label for="star-@i">★</label>
+                }
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
     </form>
 }
@@ -65,3 +105,41 @@ else
 {
     <p><a href="@Url.Action("Login", "Account")">Login</a> to add a comment.</p>
 }
+
+<!-- Yıldız Stilleri -->
+<style>
+    .star-rating {
+        font-size: 24px;
+        color: gray;
+    }
+
+    .star.filled {
+        color: gold;
+    }
+
+    .comment-rating .star {
+        font-size: 18px;
+    }
+
+    .rating {
+        direction: rtl;
+        display: flex;
+        justify-content: start;
+    }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            font-size: 24px;
+            color: gray;
+            cursor: pointer;
+        }
+
+            .rating input:checked ~ label,
+            .rating label:hover,
+            .rating label:hover ~ label {
+                color: gold;
+            }
+</style>
